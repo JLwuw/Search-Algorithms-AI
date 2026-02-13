@@ -13,6 +13,10 @@ class Problem:
     # Given a state and an action, returns the next state
     def result(self, state, action):
         raise NotImplementedError
+    
+    # Returns the path cost of a new node reached by using action from oldNode
+    def calcPathCost(self, oldNode, action):
+        raise NotImplementedError
 
     # Tests if the given state is among the goal states
     def goal_test(self, state):

@@ -28,7 +28,7 @@ class Node:
     # Returns the path from the initial node to this node
     def path(self):
         node, path_back = self, []
-        while node:
+        while node is not None:
             path_back.append(node)
             node = node.parent
         return list(reversed(path_back))

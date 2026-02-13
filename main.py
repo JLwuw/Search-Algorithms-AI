@@ -1,7 +1,7 @@
 from argparse import ArgumentError
 from enum import Enum, auto
 from problem import GraphProblem
-from searchAlgorithm import uniformCostSearch, aStarSearch, iterativeDeepeningSearch
+from searchAlgorithm import uniformCostSearch, aStarSearch, iterativeDeepeningSearch, bidirectionalUCSearch
 
 # Define problem graph
 class City(Enum):
@@ -155,6 +155,7 @@ if __name__ == "__main__":
     initial = City.ELMIRA
     goal = City.NEW_YORK_CITY
     problem = GraphProblem(initial, goal, graph)
+    backwardProblem = GraphProblem(goal, initial, graph)  # For bidirectional search, we need a problem definition for the backward search as well
 
     uscSolution, uscNodesGenerated = uniformCostSearch(problem)
     uscRoute = uscSolution.path()
@@ -189,6 +190,18 @@ if __name__ == "__main__":
     print(f"1. Mejor ruta: {idsRouteClean}")
     print(f"2. Costo total: {idsSolution.pathCost} km")
     print(f"3. Nodos generados: {idsNodesGenerated}\n\n")
+
+    biSolution, biNodesGenerated = bidirectionalUCSearch(problem, backwardProblem)
+    biRoute = biSolution.path()
+    biRouteClean = " -> ".join([node.state.name for node in biRoute])
+
+    print("========================================")
+    print("Bidirectional Uniform Cost Search ")
+    print("========================================")
+    print(f"1. Mejor ruta: {biRouteClean}")
+    print(f"2. Costo total: {biSolution.pathCost} km")
+    print(f"3. Nodos generados: {biNodesGenerated}\n\n")
+
 
 
 

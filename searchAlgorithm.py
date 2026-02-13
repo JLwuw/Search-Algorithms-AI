@@ -1,7 +1,9 @@
 # Algorithms used to explore search tree
+# Current implementation assumes a consistent heuristic function for informed search algorithms
 
 from queue import PriorityQueue, LifoQueue
 from node import Node
+
 
 def bestFirstSearch(problem, f):
     initialNode = Node(problem.initial)
@@ -29,13 +31,16 @@ def bestFirstSearch(problem, f):
 
     return None
 
+
 # Best First where f(n) = g(n)
 def uniformCostSearch(problem):
     return bestFirstSearch(problem, lambda node: node.pathCost)
 
+
 # Best First where f(n) = g(n) + h(n)
 def aStarSearch(problem, h):
     return bestFirstSearch(problem, lambda node: node.pathCost + h(node))
+
 
 # DFS with a maximum tree depth of l
 def depthLimitedSearch(problem, l):
@@ -77,30 +82,33 @@ def iterativeDeepeningSearch(problem):
             return node, totalNodesGenerated
         l += 1
 
+
 def bidirectionalBFSearch(problemForward, fForward, problemBackward, fBackward):
-
+    # Once a solution is found, joins the forward and backward paths into a single path
     def joinNodes(forwardNode, backwardNode, problem):
-        currentForwardNode = forwardNode
-        currentBackwardNode = backwardNode
+        backwardPath = backwardNode.path()
+        backwardPath.pop() # remove common node
+        backwardPath.reverse()
 
-        while currentBackwardNode.parent is not None:
-            backwardAncestor = currentBackwardNode.parent
-            backwardAncestor.parent = forwardNode
-            backwardAncestor.pathCost = problemForward.calcPathCost(currentForwardNode, backwardAncestor.state)
+        previousNode = forwardNode
 
-            currentForwardNode = backwardAncestor
-            currentBackwardNode = backwardAncestor
-            
-        return currentBackwardNode.pathCost
+        for node in backwardPath:
+            newState = node.state
+            newCost = problem.calcPathCost(previousNode, newState)
+            newNode = Node(newState, parent=previousNode, action=newState, pathCost=newCost)
+            previousNode = newNode
+        
+        return previousNode
 
     # Handles both Forward and Backward expansion. True = Forward. False = Backward
-    def proceed(dir, problem, frontier, explored, f, otherExplored, solution):
+    def proceed(dir, problem, frontier, explored, f, otherExplored, solution, generatedNodes):
         _, node = frontier.get()
 
         for child in node.expand(problem):
+            generatedNodes += 1
             if child.state not in explored or child.pathCost < explored[child.state].pathCost:
                 explored[child.state] = child
-                frontier.put(f(child), child)
+                frontier.put((f(child), child))
 
                 if child.state in otherExplored:
                     if dir:
@@ -108,14 +116,20 @@ def bidirectionalBFSearch(problemForward, fForward, problemBackward, fBackward):
                     else:
                         newSolution = joinNodes(otherExplored[child.state], child, problem)
 
-                    if solution is not None and solution.pathCost < solution.pathCost:
+                    if solution is None or newSolution.pathCost < solution.pathCost:
                         solution = newSolution
 
-        return solution
+        return solution, generatedNodes
 
+    # Determines when the algorithm shoud stop
     def terminated(solution, frontierForward, frontierBackward):
-        if solution <= frontierForward.queue[0] + frontierBackward.queue[0]:
+        if frontierForward.empty() or frontierBackward.empty():
             return True
+        if solution is None:
+            return False
+        if solution.pathCost <= frontierForward.queue[0][0] + frontierBackward.queue[0][0]:
+            return True
+        
         return False
 
     initialForward = Node(problemForward.initial)
@@ -130,11 +144,21 @@ def bidirectionalBFSearch(problemForward, fForward, problemBackward, fBackward):
     exploredBackward = {initialBackward.state: initialBackward}
 
     solution = None
+    generatedNodes = 0
 
     while not terminated(solution, frontierForward, frontierBackward):
-        if frontierForward.queue[0] < frontierBackward.queue[0]:
-            solution = proceed(True, problemForward, frontierForward, exploredForward, fForward, exploredBackward, solution)
+        if frontierForward.queue[0][0] < frontierBackward.queue[0][0]:
+            solution, generatedNodes = proceed(True, problemForward, frontierForward, exploredForward, fForward, exploredBackward, solution, generatedNodes)
         else:
-            solution = proceed(False, problemBackward, frontierBackward, exploredBackward, fBackward, exploredForward, solution)
+            solution, generatedNodes = proceed(False, problemBackward, frontierBackward, exploredBackward, fBackward, exploredForward, solution, generatedNodes)
 
-    return solution
+    return solution, generatedNodes
+
+
+def bidirectionalUCSearch(problemForward, problemBackward):
+    return bidirectionalBFSearch(problemForward, lambda node: node.pathCost, problemBackward, lambda node: node.pathCost)
+
+# Helper function to print contents of a PriorityQueue (for debugging purposes)
+def print_pq(pq):
+    for priority, node in pq.queue:
+        print(f"priority={priority}, state={node.state}, g={node.pathCost}", end=" | ")

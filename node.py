@@ -47,7 +47,7 @@ class Node:
 
     # Tiebreaker in case of equal path cost values
     def __lt__(self, node):
-        return self.state.value < node.state.value
+        return self.state < node.state
 
     def __hash__(self):
         return hash(self.state)

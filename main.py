@@ -1,10 +1,10 @@
 from argparse import ArgumentError
-from enum import Enum, auto
+from enum import IntEnum, auto
 from problem import GraphProblem
 from searchAlgorithm import uniformCostSearch, aStarSearch, iterativeDeepeningSearch, bidirectionalUCSearch
 
 # Define problem graph
-class City(Enum):
+class City(IntEnum):
     ELMIRA = auto()
     ITHACA = auto()
     BINGHAMTON = auto()

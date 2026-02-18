@@ -152,58 +152,58 @@ def heuristic(node):
     else:
         raise ArgumentError(f"Straight line distance from {node.state} to City.NEW_YORK_CITY not defined in heuristic")
 
+def printUCS(problem):
+    solution, nodesGenerated = uniformCostSearch(problem)
+    route = solution.path()
+    routeClean = " -> ".join([node.state.name for node in route])
+    print("========================================")
+    print("Uniform Cost Search")
+    print("========================================")
+    print(f"1. Mejor ruta: {routeClean}")
+    print(f"2. Costo total: {solution.pathCost} km")
+    print(f"3. Nodos generados: {nodesGenerated}\n\n")
+
+def printAStar(problem, heuristic):
+    solution, nodesGenerated = aStarSearch(problem, heuristic)
+    route = solution.path()
+    routeClean = " -> ".join([node.state.name for node in route])
+    print("========================================")
+    print("Busqueda A*")
+    print("========================================")
+    print(f"1. Mejor ruta: {routeClean}")
+    print(f"2. Costo total: {solution.pathCost} km")
+    print(f"3. Nodos generados: {nodesGenerated}\n\n")
+
+def printIDS(problem):
+    solution, nodesGenerated = iterativeDeepeningSearch(problem)
+    route = solution.path()
+    routeClean = " -> ".join([node.state.name for node in route])
+    print("========================================")
+    print("Busqueda en Profundidad Iterativa")
+    print("========================================")
+    print(f"1. Mejor ruta: {routeClean}")
+    print(f"2. Costo total: {solution.pathCost} km")
+    print(f"3. Nodos generados: {nodesGenerated}\n\n")
+
+def printBIUCS(forwardProblem, backwardProblem):
+    solution, nodesGenerated = bidirectionalUCSearch(forwardProblem, backwardProblem)
+    route = solution.path()
+    routeClean = " -> ".join([node.state.name for node in route])
+    print("========================================")
+    print("Uniform Cost Search Bidireccional:")
+    print("========================================")
+    print(f"1. Mejor ruta: {routeClean}")
+    print(f"2. Costo total: {solution.pathCost} km")
+    print(f"3. Nodos generados: {nodesGenerated}\n\n")
+
 if __name__ == "__main__":
     initial = City.ELMIRA
     goal = City.NEW_YORK_CITY
     problem = GraphProblem(initial, goal, graph)
     backwardProblem = GraphProblem(goal, initial, graph)  # For bidirectional search, we need a problem definition for the backward search as well
 
-    uscSolution, uscNodesGenerated = uniformCostSearch(problem)
-    uscRoute = uscSolution.path()
-    uscRouteClean = " -> ".join([node.state.name for node in uscRoute])
-
-    print("========================================")
-    print("UNIFORM COST SEARCH ")
-    print("========================================")
-    print(f"1. Mejor ruta: {uscRouteClean}")
-    print(f"2. Costo total: {uscSolution.pathCost} km")
-    print(f"3. Nodos generados: {uscNodesGenerated}\n\n")
-
-    aSolution, aNodesGenerated = aStarSearch(problem, heuristic)
-    aRoute = aSolution.path()
-    aRouteClean = " -> ".join([node.state.name for node in aRoute])
-
-    print("========================================")
-    print("A* Search ")
-    print("========================================")
-    print(f"1. Mejor ruta: {aRouteClean}")
-    print(f"2. Costo total: {aSolution.pathCost} km")
-    print(f"3. Nodos generados: {aNodesGenerated}\n\n")
-
-
-    idsSolution, idsNodesGenerated = iterativeDeepeningSearch(problem)
-    idsRoute = idsSolution.path()
-    idsRouteClean = " -> ".join([node.state.name for node in idsRoute])
-
-    print("========================================")
-    print("Iterative Deepening Search ")
-    print("========================================")
-    print(f"1. Mejor ruta: {idsRouteClean}")
-    print(f"2. Costo total: {idsSolution.pathCost} km")
-    print(f"3. Nodos generados: {idsNodesGenerated}\n\n")
-
-    biSolution, biNodesGenerated = bidirectionalUCSearch(problem, backwardProblem)
-    biRoute = biSolution.path()
-    biRouteClean = " -> ".join([node.state.name for node in biRoute])
-
-    print("========================================")
-    print("Bidirectional Uniform Cost Search ")
-    print("========================================")
-    print(f"1. Mejor ruta: {biRouteClean}")
-    print(f"2. Costo total: {biSolution.pathCost} km")
-    print(f"3. Nodos generados: {biNodesGenerated}\n\n")
-
-
-
-
+    # printUCS(problem)
+    printIDS(problem)
+    printBIUCS(problem, backwardProblem)
+    printAStar(problem, heuristic)
 

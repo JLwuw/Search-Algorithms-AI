@@ -71,6 +71,7 @@ graph = {
     City.NEW_YORK_CITY: {
         City.PATERSON: 35,
         City.NEWARK: 25,
+        City.TRENTON: 95
     },
     City.NEWARK: {
         City.NEW_YORK_CITY: 25,

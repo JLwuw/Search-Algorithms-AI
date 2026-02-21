@@ -1,9 +1,8 @@
 from problem import SlidingPiecesProblem
 from searchAlgorithm import uniformCostSearch, aStarSearch, iterativeDeepeningSearch, bidirectionalUCSearch
+from dataBaseGenerator import generateDB_1_4, generateDB_5_8
 import json
 import os
-from dataBaseGenerator import generateDB_1_4, generateDB_5_8
-
 
 def printUCS(problem):
     solution, nodesGenerated = uniformCostSearch(problem)
@@ -64,13 +63,28 @@ if __name__ == "__main__":
     filePath_5_8 = "data/solutions_5_8.json"
     
     if not os.path.exists(filePath_1_4):
-        generateDB_1_4()
-    
-    if not os.path.exists(filePath_5_8):
-        generateDB_5_8()
+        generateDB_1_4(goalState)
+        solutions_1_4 = json.load(open(filePath_1_4))
+    else:
+        solutions_1_4 = json.load(open(filePath_1_4))
+        goalState_1_4 = tuple(tile if tile <= 4 else 0 for tile in goalState)
+        
+        # Verifies that the current solutions file isnt outdated (corresponds to a differet goal state)
+        if str(goalState_1_4) not in solutions_1_4 or solutions_1_4[str(goalState_1_4)] != 0:
+            generateDB_1_4(goalState)
+            solutions_1_4 = json.load(open(filePath_1_4))
 
-    solutions_1_4 = json.load(open(filePath_1_4))
-    solutions_5_8 = json.load(open(filePath_5_8))
+    if not os.path.exists(filePath_5_8):
+        generateDB_5_8(goalState)
+        solutions_5_8 = json.load(open(filePath_5_8))
+    else:
+        solutions_5_8 = json.load(open(filePath_5_8))
+        goalState_5_8 = tuple(tile if tile >= 5 else 0 for tile in goalState)
+        
+        # Verifies that the current solutions file isnt outdated (corresponds to a differet goal state)
+        if str(goalState_5_8) not in solutions_5_8 or solutions_5_8[str(goalState_5_8)] != 0:
+            generateDB_5_8(goalState)
+            solutions_5_8 = json.load(open(filePath_5_8))
 
     def DBheuristic(node):
         state_1_4 = tuple(tile if tile <= 4 else 0 for tile in node.state)
@@ -85,10 +99,3 @@ if __name__ == "__main__":
         return solutions_1_4[str(state_1_4)] + solutions_5_8[str(state_5_8)]
     
     printAStar(slidingPiecesProblem, DBheuristic)
-    
-
-
-
-
-
-

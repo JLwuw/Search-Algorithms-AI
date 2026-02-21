@@ -17,9 +17,9 @@ def exportToJSON(database, filename, folder="data"):
     print(f"Exported {len(database)} solutions to {filepath}")
 
 
-def generateDB_1_4():
+def generateDB_1_4(goalState):
     # Generate all initial states for 1-4 subproblem
-    goal_1_4 = (1, 2, 3, 4, 0, 0, 0, 0, 0)
+    goal_1_4 = tuple(tile if tile <= 4 else 0 for tile in goalState)
     initial_1_4 = []
     for positions in combinations(range(9), 4):
         for pieces_perm in permutations([1, 2, 3, 4]):
@@ -43,9 +43,9 @@ def generateDB_1_4():
     exportToJSON(database_1_4, "solutions_1_4.json")
 
 
-def generateDB_5_8():
+def generateDB_5_8(goalState):
     # Generate all initial states for 5-8 subproblem
-    goal_5_8 = (0, 0, 0, 0, 5, 6, 7, 8, 0)
+    goal_5_8 = tuple(tile if tile >= 5 else 0 for tile in goalState)
     initial_5_8 = []
     for positions in combinations(range(9), 4):
         for pieces_perm in permutations([5, 6, 7, 8]):

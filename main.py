@@ -59,15 +59,18 @@ if __name__ == "__main__":
     manhattanHeuristic = slidingPiecesProblem.manhattanHeuristic()
     
     printAStar(slidingPiecesProblem, manhattanHeuristic)
+
+    filePath_1_4 = "data/solutions_1_4.json"
+    filePath_5_8 = "data/solutions_5_8.json"
     
-    if not os.path.exists("data/solutions_1_4.json"):
+    if not os.path.exists(filePath_1_4):
         generateDB_1_4()
     
-    if not os.path.exists("data/solutions_5_8.json"):
+    if not os.path.exists(filePath_5_8):
         generateDB_5_8()
 
-    solutions_1_4 = json.load(open("data/solutions_1_4.json"))
-    solutions_5_8 = json.load(open("data/solutions_5_8.json"))
+    solutions_1_4 = json.load(open(filePath_1_4))
+    solutions_5_8 = json.load(open(filePath_5_8))
 
     def DBheuristic(node):
         state_1_4 = tuple(tile if tile <= 4 else 0 for tile in node.state)

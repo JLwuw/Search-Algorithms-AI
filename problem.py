@@ -80,7 +80,7 @@ class GraphProblem(Problem):
 
 # Sliding pieces problem
 # Works for any n x n grid of pieces (e.g. 3x3 for 8-puzzle, 4x4 for 15-puzzle, etc.)
-# State is represented as an tuple of ints (e.g. [1, 2, 3, 4, 0, 5, 7, 8, 6] for 8-puzzle) where 0 represents the blank piece
+# State is represented as an tuple of ints (e.g. (1, 2, 3, 4, 0, 5, 7, 8, 6) for 8-puzzle) where 0 represents the blank piece
 # Action is represented as the index of the blank piece and the piece to swap with (e.g. (blank_idx, swap_idx))
 class SlidingPiecesProblem(Problem):
     def __init__(self, initial, goal):

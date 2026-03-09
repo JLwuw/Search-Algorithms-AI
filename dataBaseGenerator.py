@@ -16,9 +16,12 @@ def exportToJSON(database, filename, folder="data"):
     
     print(f"Exported {len(database)} solutions to {filepath}")
 
-
+# Generate all initial states for 1-4 subproblem
 def generateDB_1_4(goalState):
-    # Generate all initial states for 1-4 subproblem
+    
+    if goalState is not None and (not isinstance(goalState, tuple) or len(goalState) != 9):
+        raise ValueError("Goal state must be a tuple of length 9.")
+
     goal_1_4 = tuple(tile if tile <= 4 else 0 for tile in goalState)
     initial_1_4 = []
     for positions in combinations(range(9), 4):
@@ -43,8 +46,12 @@ def generateDB_1_4(goalState):
     exportToJSON(database_1_4, "solutions_1_4.json")
 
 
+# Generate all initial states for 5-8 subproblem
 def generateDB_5_8(goalState):
-    # Generate all initial states for 5-8 subproblem
+
+    if goalState is not None and (not isinstance(goalState, tuple) or len(goalState) != 9):
+        raise ValueError("Goal state must be a tuple of length 9.")
+    
     goal_5_8 = tuple(tile if tile >= 5 else 0 for tile in goalState)
     initial_5_8 = []
     for positions in combinations(range(9), 4):

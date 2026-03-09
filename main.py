@@ -19,9 +19,6 @@ def printAStar(problem, heuristic):
     solution, nodesGenerated = aStarSearch(problem, heuristic)
     route = solution.path()
     routeClean = " -> ".join([str(node.state) for node in route])
-    print("========================================")
-    print("Busqueda A*")
-    print("========================================")
     print(f"1. Mejor ruta: {routeClean}")
     print(f"2. Costo total: {solution.pathCost}")
     print(f"3. Nodos generados: {nodesGenerated}\n\n")
@@ -50,52 +47,72 @@ def printBIUCS(forwardProblem, backwardProblem):
 
 if __name__ == "__main__":
 
-    initialState = (1, 2, 3, 5, 4, 0, 7, 6, 8)
-    goalState = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+    initialStates = [
+        (2, 0, 3, 1, 7, 4, 5, 8, 6),
+        (3, 1, 0, 8, 4, 2, 5, 6, 7),
+        (4, 5, 1, 6, 8, 7, 3, 0, 2)
+    ]
 
-    slidingPiecesProblem = SlidingPiecesProblem(initialState, goalState)
+    for initialState in initialStates:
 
-    manhattanHeuristic = slidingPiecesProblem.manhattanHeuristic()
-    
-    printAStar(slidingPiecesProblem, manhattanHeuristic)
+        print("========================================")
+        print(f"Initial State: {initialState}")
+        print("========================================\n")
 
-    filePath_1_4 = "data/solutions_1_4.json"
-    filePath_5_8 = "data/solutions_5_8.json"
-    
-    if not os.path.exists(filePath_1_4):
-        generateDB_1_4(goalState)
-        solutions_1_4 = json.load(open(filePath_1_4))
-    else:
-        solutions_1_4 = json.load(open(filePath_1_4))
-        goalState_1_4 = tuple(tile if tile <= 4 else 0 for tile in goalState)
+        goalState = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+
+        slidingPiecesProblem = SlidingPiecesProblem(initialState, goalState)
+
+        manhattanHeuristic = slidingPiecesProblem.manhattanHeuristic()
+
+        print("========================================")
+        print("Manhattan Heuristic:")
+        print("========================================")
         
-        # Verifies that the current solutions file isnt outdated (corresponds to a differet goal state)
-        if str(goalState_1_4) not in solutions_1_4 or solutions_1_4[str(goalState_1_4)] != 0:
+        printAStar(slidingPiecesProblem, manhattanHeuristic)
+
+        filePath_1_4 = "data/solutions_1_4.json"
+        filePath_5_8 = "data/solutions_5_8.json"
+        
+        if not os.path.exists(filePath_1_4):
             generateDB_1_4(goalState)
             solutions_1_4 = json.load(open(filePath_1_4))
+        else:
+            solutions_1_4 = json.load(open(filePath_1_4))
+            goalState_1_4 = tuple(tile if tile <= 4 else 0 for tile in goalState)
+            
+            # Verifies that the current solutions file isnt outdated (corresponds to a differet goal state)
+            if str(goalState_1_4) not in solutions_1_4 or solutions_1_4[str(goalState_1_4)] != 0:
+                generateDB_1_4(goalState)
+                solutions_1_4 = json.load(open(filePath_1_4))
 
-    if not os.path.exists(filePath_5_8):
-        generateDB_5_8(goalState)
-        solutions_5_8 = json.load(open(filePath_5_8))
-    else:
-        solutions_5_8 = json.load(open(filePath_5_8))
-        goalState_5_8 = tuple(tile if tile >= 5 else 0 for tile in goalState)
-        
-        # Verifies that the current solutions file isnt outdated (corresponds to a differet goal state)
-        if str(goalState_5_8) not in solutions_5_8 or solutions_5_8[str(goalState_5_8)] != 0:
+        if not os.path.exists(filePath_5_8):
             generateDB_5_8(goalState)
             solutions_5_8 = json.load(open(filePath_5_8))
+        else:
+            solutions_5_8 = json.load(open(filePath_5_8))
+            goalState_5_8 = tuple(tile if tile >= 5 else 0 for tile in goalState)
+            
+            # Verifies that the current solutions file isnt outdated (corresponds to a differet goal state)
+            if str(goalState_5_8) not in solutions_5_8 or solutions_5_8[str(goalState_5_8)] != 0:
+                generateDB_5_8(goalState)
+                solutions_5_8 = json.load(open(filePath_5_8))
 
-    def DBheuristic(node):
-        state_1_4 = tuple(tile if tile <= 4 else 0 for tile in node.state)
-        state_5_8 = tuple(tile if tile >= 5 else 0 for tile in node.state)
+        def DBheuristic(node):
+            state_1_4 = tuple(tile if tile <= 4 else 0 for tile in node.state)
+            state_5_8 = tuple(tile if tile >= 5 else 0 for tile in node.state)
 
-        if str(state_1_4) not in solutions_1_4:
-            raise ValueError(f"Unable to find match for {node.state} in 1-4 database")
+            if str(state_1_4) not in solutions_1_4:
+                raise ValueError(f"Unable to find match for {node.state} in 1-4 database")
+            
+            if str(state_5_8) not in solutions_5_8:
+                raise ValueError(f"Unable to find match for {node.state} in 5-8 database")
+            
+            return solutions_1_4[str(state_1_4)] + solutions_5_8[str(state_5_8)]
+
+
+        print("========================================")
+        print("DB Heuristic:")
+        print("========================================")
         
-        if str(state_5_8) not in solutions_5_8:
-            raise ValueError(f"Unable to find match for {node.state} in 5-8 database")
-        
-        return solutions_1_4[str(state_1_4)] + solutions_5_8[str(state_5_8)]
-    
-    printAStar(slidingPiecesProblem, DBheuristic)
+        printAStar(slidingPiecesProblem, DBheuristic)
